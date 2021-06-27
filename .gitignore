@@ -1,0 +1,6 @@
+output/
+.ipynb_checkpoints/
+
+!dataset
+dataset/*
+!dataset/deepfashion2_to_coco.py
