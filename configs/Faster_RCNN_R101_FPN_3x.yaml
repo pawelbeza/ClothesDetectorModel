@@ -9,6 +9,9 @@ MODEL:
 DATASETS:
   TRAIN: ("deepfashion_train",)
   TEST: ("deepfashion_validation",)
+DATALOADER:
+  SAMPLER_TRAIN: "RepeatFactorTrainingSampler"
+  REPEAT_THRESHOLD: 0.01
 SOLVER:
   IMS_PER_BATCH: 2
   CHECKPOINT_PERIOD: 10000
