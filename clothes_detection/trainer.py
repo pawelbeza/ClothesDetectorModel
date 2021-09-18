@@ -5,6 +5,7 @@ from detectron2.engine import DefaultTrainer
 from detectron2.evaluation import COCOEvaluator
 
 from .loss_eval_hook import LossEvalHook
+from .lr_scheduler import LRSchedulerWithLossHook, WarmupReduceLROnPlateau
 
 
 class Trainer(DefaultTrainer):
@@ -27,6 +28,7 @@ class Trainer(DefaultTrainer):
 
     def build_hooks(self):
         hooks = super().build_hooks()
+        hooks[1] = LRSchedulerWithLossHook()
         hooks.insert(-1, LossEvalHook(
             self.cfg.TEST.EVAL_PERIOD,
             self.model,
@@ -37,3 +39,18 @@ class Trainer(DefaultTrainer):
             )
         ))
         return hooks
+
+    @classmethod
+    def build_lr_scheduler(cls, cfg, optimizer):
+        print(cfg.SOLVER.LR_SCHEDULER_NAME)
+        if cfg.SOLVER.LR_SCHEDULER_NAME == "ReduceLROnPlateau":
+            return WarmupReduceLROnPlateau(
+                cfg,
+                optimizer,
+                mode='min', factor=cfg.SOLVER.GAMMA, patience=30000,
+                threshold=0.001, threshold_mode='rel', cooldown=0,
+                min_lr=1e-06, eps=1e-08, verbose=True
+            )
+
+        return super().build_lr_scheduler(cfg, optimizer)
+
