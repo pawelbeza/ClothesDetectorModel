@@ -37,9 +37,9 @@ class LRSchedulerWithLossHook(LRScheduler):
         latest = self.trainer.storage.latest()
 
         if "validation_loss" in latest:
-            loss = latest["validation_loss"]
+            loss = latest["validation_loss"][0]
         else:
-            loss = 1
+            loss = 1.0
 
         lr = self._optimizer.param_groups[self._best_param_group_id]["lr"]
         self.trainer.storage.put_scalar("lr", lr, smoothing_hint=False)
